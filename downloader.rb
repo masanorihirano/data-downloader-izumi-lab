@@ -9,6 +9,7 @@ require 'archive/tar/minitar'
 require 'concurrent'
 require "fileutils"
 require_relative "./config.rb"
+require_relative "./yesno.rb"
 
 OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
@@ -96,12 +97,12 @@ if ARGV[0] == "show" and ARGV.length == 3 then
 	end
 end
 
-if ARGV[0] == "show" and ARGV.length >= 3 then
+if ARGV[0] == "show" and ARGV.length >= 5 then
 	puts "Arguments error. Please refere help:\n\truby #{__FILE__} help"
 	exit
 end
 
-if ARGV[0] == "download" and ARGV.length == 4 then
+if (ARGV[0] == "download" or ARGV[0] == "show") and ARGV.length == 4 then
 	if not DRIVES.keys().include?(ARGV[1]) then
                 puts "Cannot find repository: #{ARGV[1]}"
                 exit
@@ -128,6 +129,13 @@ if ARGV[0] == "download" and ARGV.length == 4 then
                         	exit
 			else
 				# download
+				if ARGV[0] == "show" then
+					puts "You type 'show' in stead of 'download.'"
+					puts "Do you want to download target?"
+					if not yes_no? then
+						exit
+					end
+				end
 				target = file_candidates.select{|file| file.name == ARGV[3] or file.name == ARGV[3] + ".tar.xz"}[0]
 				download_id = target.id
 				file_name = target.name
