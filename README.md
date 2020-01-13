@@ -11,7 +11,7 @@
 
 ## Usage
 ```
-ruby (/path/to/this-repository/)downloader.py
+ruby (/path/to/this-repository/)downloader.rb
 ```
 
 ## Note that
