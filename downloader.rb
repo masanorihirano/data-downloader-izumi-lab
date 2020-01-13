@@ -14,8 +14,14 @@ require_relative "./yesno.rb"
 OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
 token_store_file = File.expand_path('.credential/credentials.yaml', __dir__)
+if ARGV.length >= 1 and ARGV[0] == "upload" then
+	token_store_file = File.expand_path('.credential/credentials_upload.yaml', __dir__)
+end
 scope = "https://www.googleapis.com/auth/drive"
 client_id = Google::Auth::ClientId.from_file(File.expand_path('.credential/client_secret.json', __dir__))
+if ARGV.length >= 1 and ARGV[0] == "upload" then
+	client_id = Google::Auth::ClientId.from_file(File.expand_path('.credential/client_secret_uploader.json', __dir__))
+end
 
 token_store = Google::Auth::Stores::FileTokenStore.new(file: token_store_file)
 authorizer = Google::Auth::UserAuthorizer.new(client_id, scope, token_store)
@@ -41,6 +47,7 @@ if ARGV[0] == "help" and ARGV.length == 1 then
 	puts "Show folders in a repository:\n\truby #{__FILE__} show [repository]"
 	puts "Show download candidates in a folder:\n\truby #{__FILE__} show [repository] [folder]"
 	puts "Download:\n\truby #{__FILE__} download [repository] [folder] [target]"
+	puts "Upload:\n\truby #{__FILE__} upload [repository] [folder] [file/folder]"
 	exit
 end
 
@@ -102,7 +109,7 @@ if ARGV[0] == "show" and ARGV.length >= 5 then
 	exit
 end
 
-if (ARGV[0] == "download" or ARGV[0] == "show") and ARGV.length == 4 then
+if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.length == 4 then
 	if not DRIVES.keys().include?(ARGV[1]) then
                 puts "Cannot find repository: #{ARGV[1]}"
                 exit
@@ -124,43 +131,112 @@ if (ARGV[0] == "download" or ARGV[0] == "show") and ARGV.length == 4 then
                                                                supports_team_drives: true,
                                                                team_drive_id: DRIVES[ARGV[1]]
                                                               ).files()
-			if not file_candidates.map{|folder| folder.name}.include?(ARGV[3]) then
-				puts "Cannot find download target: #{ARGV[3]}"
-                        	exit
-			else
-				# download
-				if ARGV[0] == "show" then
-					puts "You type 'show' in stead of 'download.'"
-					puts "Do you want to download target?"
-					if not yes_no? then
-						exit
-					end
-				end
-				target = file_candidates.select{|file| file.name == ARGV[3] or file.name == ARGV[3] + ".tar.xz"}[0]
-				download_id = target.id
-				file_name = target.name
-				if file_name.include?(".tar.xz") then
-					save_path = File.expand_path("tmp/#{file_name}", __dir__)
+			if (ARGV[0] == "download" or ARGV[0] == "show") then
+				if not file_candidates.map{|folder| folder.name.gsub(".tar.xz", "")}.include?(ARGV[3]) then
+					puts "Cannot find download target: #{ARGV[3]}"
+                        		exit
 				else
-					save_path = file_name
-				end
-				puts "Start downloading..."
-				service.get_file(download_id, download_dest:save_path)
-				if file_name.include?(".tar.xz") then
-					if File.exist?(File.expand_path("pixz-runtime", __dir__))
-						# multi
-						system("#{File.expand_path("pixz-runtime", __dir__)} -x #{ARGV[0]} < #{save_path} | tar x")
-					else
-					# single
-						system("tar -Jxvf #{save_path}")
+					# download
+					if ARGV[0] == "show" then
+						puts "You type 'show' in stead of 'download.'"
+						puts "Do you want to download target?"
+						if not yes_no? then
+							exit
+						end
 					end
+					target = file_candidates.select{|file| file.name == ARGV[3] or file.name == ARGV[3] + ".tar.xz"}[0]
+					download_id = target.id
+					file_name = target.name
+					if file_name.include?(".tar.xz") then
+						save_path = File.expand_path("tmp/#{file_name}", __dir__)
+					else
+						save_path = file_name
+					end
+					puts "Start downloading..."
+					service.get_file(download_id, download_dest:save_path)
+					if file_name.include?(".tar.xz") then
+						if File.exist?(File.expand_path("pixz-runtime", __dir__))
+							# multi
+							system("#{File.expand_path("pixz-runtime", __dir__)} -x #{ARGV[0]} < #{save_path} | tar x")
+						else
+							# single
+							system("tar -Jxvf #{save_path}")
+						end
+					end
+					puts "Downloading finished!"
+					exit
 				end
-				puts "Downloading finished!"
-				exit
+			elsif ARGV[0] == "upload" then
+				# upload
+				is_update = false
+				if file_candidates.map{|folder| folder.name.gsub(".tar.xz", "")}.include?(ARGV[3]) then
+                                	puts "Target already exist: #{ARGV[3]}"
+                                	puts "Do you want to override?"
+                                	if not yes_no? then
+                                	        exit
+                                	end
+					is_update = true
+                        	end
+				if is_update then
+					target = file_candidates.select{|file| file.name == ARGV[3] or file.name == ARGV[3] + ".tar.xz"}[0]
+                                        file_id = target.id
+				end
+				path = ARGV[3]
+                        	is_dir = false
+                        	if FileTest.directory?(path) then
+                        	        is_dir = true
+                        	elsif FileTest.file?(path) then
+                        	        id_dir = false
+                        	else
+                        	        puts "File/directory does not exist"
+                        	        exit
+                        	end
+	
+                        	file_name = ARGV[3]
+                        	file_path = file_name
+				puts "File/folder uploading started"
+                        	if is_dir then
+                        	        # compress
+                        	        file_name += ".tar.xz"
+                        	        file_path = File.expand_path(file_name, File.expand_path("tmp/", __dir__))
+                        	        if File.exist?(File.expand_path("pixz-runtime", __dir__))
+                        	                # multi
+						system("tar cf - #{ARGV[3]} | #{File.expand_path("pixz-runtime", __dir__)} > #{file_path}")
+                        	        else
+                        	                #single
+                        	                system("tar -Jcf #{file_path} #{ARGV[3]}")
+                        	        end
+                        	end
+				if is_update then
+					file_object = {
+                                	        name: file_name,
+                                        	modifiedTime: DateTime.now
+                                	}
+					service.update_file(
+						file_id,
+						file_object,
+						supports_team_drives: true,
+						upload_source: file_path
+					)
+				else
+					file_object = {
+                                        	name: file_name,
+                                        	parents: [target_folder.id],
+                                        	modifiedTime: DateTime.now
+                                	}
+					service.create_file(
+						file_object,
+						supports_team_drives: true,
+						upload_source: file_path
+					)
+				end
+				if is_dir then
+					FileUtils.rm(file_path)
+				end
+				puts "Upload finished"
+                        	exit
 			end
 		end
 	end
 end
-
-puts "Arguments error. Please refere help:\n\truby #{__FILE__} help"
 

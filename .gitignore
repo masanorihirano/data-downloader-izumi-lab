@@ -1,5 +1,6 @@
 Gemfile.lock
 .credential/credentials.yaml
+.credential/credentials_upload.yaml
 pixz-runtime
 
 *.gem
