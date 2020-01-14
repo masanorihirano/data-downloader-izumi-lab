@@ -4,9 +4,6 @@ require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'google/apis/drive_v3'
 require "date"
-require 'zlib'
-require 'archive/tar/minitar'
-require 'concurrent'
 require "fileutils"
 require_relative "./config.rb"
 require_relative "./yesno.rb"
@@ -155,9 +152,9 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
 					puts "Start downloading..."
 					service.get_file(download_id, download_dest:save_path)
 					if file_name.include?(".tar.xz") then
-						if File.exist?(File.expand_path("pixz-runtime", __dir__))
-							# multi
-							system("#{File.expand_path("pixz-runtime", __dir__)} -x #{ARGV[0]} < #{save_path} | tar x")
+						if True then
+                                                        # multi
+							system("pixz -x #{ARGV[0]} < #{save_path} | tar x")
 						else
 							# single
 							system("tar -Jxvf #{save_path}")
@@ -199,9 +196,9 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
                         	        # compress
                         	        file_name += ".tar.xz"
                         	        file_path = File.expand_path(file_name, File.expand_path("tmp/", __dir__))
-                        	        if File.exist?(File.expand_path("pixz-runtime", __dir__))
+                        	        if True then
                         	                # multi
-						system("tar cf - #{ARGV[3]} | #{File.expand_path("pixz-runtime", __dir__)} > #{file_path}")
+						system("tar cf - #{ARGV[3]} | pixz > #{file_path}")
                         	        else
                         	                #single
                         	                system("tar -Jcf #{file_path} #{ARGV[3]}")
