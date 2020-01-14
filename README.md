@@ -2,9 +2,23 @@
 
 ## Requirements
  - ruby + gem (Recommend: https://github.com/rbenv/rbenv )
- - libarchive 2.8 or later (if use of multi processing; set-up command is written in `setup-full.sh`)
+ - pixz
 
 ## Set up
+At first, install pixz.
+
+For max
+```
+brew install pixz
+```
+
+For linux
+```
+sudo apt install pixz
+```
+or build using https://github.com/vasi/pixz
+
+Then,
 ```
 ./setup.sh
 ```
