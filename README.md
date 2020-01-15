@@ -1,7 +1,7 @@
 # data-downloader-izumi-lab
 
 ## Requirements
- - ruby + gem (Recommend: https://github.com/rbenv/rbenv )
+ - ruby + gem + bundler (Recommend: https://github.com/rbenv/rbenv )
  - pixz
 
 ## Set up
