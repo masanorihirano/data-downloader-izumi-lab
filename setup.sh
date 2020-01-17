@@ -1,1 +1,2 @@
+gem install bundle
 bundle
