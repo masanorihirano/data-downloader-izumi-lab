@@ -154,7 +154,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
 					puts "Start downloading..."
 					service.get_file(download_id, download_dest:save_path)
 					if file_name.include?(".tar.xz") then
-						if True then
+						if true then
                                                         # multi
 							system("pixz -x #{ARGV[0]} < #{save_path} | tar x")
 						else
