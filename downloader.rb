@@ -32,6 +32,8 @@ if credentials.nil?
 end
 service = Google::Apis::DriveV3::DriveService.new
 service.authorization = credentials
+service.client_options.send_timeout_sec = 1200
+service.client_options.open_timeout_sec = 1200
 
 if ARGV.length == 0 then
 	puts "To print help, please type \n\n\truby #{__FILE__} help\n\n"
