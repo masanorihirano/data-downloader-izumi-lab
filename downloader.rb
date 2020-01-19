@@ -196,7 +196,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
                         	        # compress
                         	        file_name += ".tar.xz"
                         	        file_path = File.expand_path(file_name, File.expand_path("tmp/", __dir__))
-                        	        if True then
+                        	        if true then
                         	                # multi
 						system("tar cf - #{ARGV[3]} | pixz > #{file_path}")
                         	        else
