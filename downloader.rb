@@ -93,9 +93,9 @@ if ARGV[0] == "show" and ARGV.length == 3 then
 							       supports_team_drives: true,
 							       team_drive_id: DRIVES[ARGV[1]]
 							      ).files()
-			puts "Download Candidates:"
-			file_candidates.each{|file| puts "\t#{file.name.gsub(".tar.xz","")}"}
-			puts "To download,\n\truby #{__FILE__} download #{ARGV[1]} #{ARGV[2]} [target]"
+			#puts "Download Candidates:"
+			file_candidates.each{|file| puts "#{file.name.gsub(".tar.xz","")}"}
+			#puts "To download,\n\truby #{__FILE__} download #{ARGV[1]} #{ARGV[2]} [target]"
 			exit
 		end
 	end
