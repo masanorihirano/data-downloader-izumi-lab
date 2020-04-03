@@ -156,7 +156,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
 					if file_name.include?(".tar.xz") then
 						if true then
                                                         # multi
-							system("pixz -x #{ARGV[0]} < #{save_path} | tar x")
+							system("pixz -x #{ARGV[3]} < #{save_path} | tar x")
 						else
 							# single
 							system("tar -Jxvf #{save_path}")
