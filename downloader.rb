@@ -161,6 +161,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
 							# single
 							system("tar -Jxvf #{save_path}")
 						end
+						FileUtils.rm(save_path)
 					end
 					puts "Downloading finished!"
 					exit
@@ -238,4 +239,3 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
 		end
 	end
 end
-
