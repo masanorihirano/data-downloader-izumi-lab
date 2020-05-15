@@ -66,6 +66,7 @@ if ARGV[0] == "show" and ARGV.length == 2 then
 						  team_drive_id: DRIVES[ARGV[1]],
 						  include_team_drive_items: true,
 						  supports_team_drives: true,
+						  page_size: 1000,
 						  q:"mimeType='application/vnd.google-apps.folder' and '#{DRIVES[ARGV[1]]}' in parents").files()
 		puts "Folders in #{ARGV[1]}:"
 		root_folders.each{|folder| puts "\t#{folder.name}"}
@@ -83,6 +84,7 @@ if ARGV[0] == "show" and ARGV.length == 3 then
                                                   team_drive_id: DRIVES[ARGV[1]],
                                                   include_team_drive_items: true,
                                                   supports_team_drives: true,
+						  page_size: 1000,
                                                   q:"mimeType='application/vnd.google-apps.folder' and '#{DRIVES[ARGV[1]]}' in parents").files()
 		if not root_folders.map{|folder| folder.name}.include?(ARGV[2]) then
 			puts "Cannot find folder: #{ARGV[2]}"
@@ -93,6 +95,7 @@ if ARGV[0] == "show" and ARGV.length == 3 then
 							       corpora: 'teamDrive',
 							       include_team_drive_items: true,
 							       supports_team_drives: true,
+							       page_size: 1000,
 							       team_drive_id: DRIVES[ARGV[1]]
 							      ).files()
 			#puts "Download Candidates:"
@@ -118,6 +121,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
                                                   team_drive_id: DRIVES[ARGV[1]],
                                                   include_team_drive_items: true,
                                                   supports_team_drives: true,
+						  page_size: 1000,
                                                   q:"mimeType='application/vnd.google-apps.folder' and '#{DRIVES[ARGV[1]]}' in parents").files()
                 if not root_folders.map{|folder| folder.name}.include?(ARGV[2]) then
                         puts "Cannot find folder: #{ARGV[2]}"
@@ -128,6 +132,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
                                                                corpora: 'teamDrive',
                                                                include_team_drive_items: true,
                                                                supports_team_drives: true,
+							       page_size: 1000,
                                                                team_drive_id: DRIVES[ARGV[1]]
                                                               ).files()
 			if (ARGV[0] == "download" or ARGV[0] == "show") then
