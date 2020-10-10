@@ -159,7 +159,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
 					puts "Start downloading..."
 					service.get_file(download_id, download_dest:save_path)
 					if file_name.include?(".tar.xz") then
-						if true then
+						if false then
                                                         # multi
 							system("pixz -x #{ARGV[3]} < #{save_path} | tar x")
 						else
@@ -204,7 +204,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
                         	        # compress
                         	        file_name += ".tar.xz"
                         	        file_path = File.expand_path(file_name, File.expand_path("tmp/", __dir__))
-                        	        if true then
+                        	        if false then
                         	                # multi
 						system("tar cf - #{ARGV[3]} | pixz > #{file_path}")
                         	        else
