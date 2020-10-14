@@ -209,7 +209,7 @@ if (ARGV[0] == "download" or ARGV[0] == "show" or ARGV[0] == "upload") and ARGV.
 						system("tar cf - #{ARGV[3]} | pixz > #{file_path}")
                         	        else
                         	                #single
-                        	                system("tar cf - #{ARGV[3]} | pixz -p 1 > #{file_path}"")
+                        	                system("tar cf - #{ARGV[3]} | pixz -p 1 > #{file_path}")
                         	        end
                         	end
 				if is_update then
